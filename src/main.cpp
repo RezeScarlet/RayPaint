@@ -1,18 +1,16 @@
 #include "../include/raylib-cpp.hpp"
 #include <iostream>
 #include <memory>
+#include <raylib.h>
 #define RAYGUI_IMPLEMENTATION
 #include "../include/raygui.h"
 
 #include "Shapes.hpp"
 
-static void rectButton();
-static void elliButton();
-static void lineButton();
-
-static int buttonPressed =
-    0; // 0 = line, 1 = rectangle, 2 = ellipse, 3 = polygon
-
+int Mode = 0; // 0 = line, 1 = rectangle, 2 = ellipse, 3 = polygon, 4 =
+              // lineColor, 5 = fillColor
+raylib::Color lineColor = raylib::Color::Black();
+raylib::Color fillColor = raylib::Color::Black();
 int main() {
 
   SetConfigFlags(FLAG_MSAA_4X_HINT);
@@ -22,15 +20,9 @@ int main() {
   float h = window.GetHeight();
   float w = window.GetWidth();
 
-  bool lineButtonPressed = false;
-  bool rectButtonPressed = false;
-  bool elliButtonPressed = false;
-
   std::vector<std::unique_ptr<Paint::Shape>> shapes;
   raylib::Vector2 mouseClick(0, 0);
   raylib::Vector2 mouseRelease(0, 0);
-
-  raylib::Rectangle guiGroupRect(8, 8, w - 16, 34);
 
   while (WindowShouldClose() == false) {
 
@@ -46,33 +38,38 @@ int main() {
     if (IsMouseButtonDown(0)) {
       mouseRelease.x = GetMouseX();
       mouseRelease.y = GetMouseY();
+      
+      DrawLineV(mouseClick, mouseRelease, lineColor);
     }
 
     if (IsMouseButtonReleased(0)) {
       Paint::Line tempLine(mouseClick, mouseRelease);
-      shapes.push_back(tempLine); // todo arrumar essa bosta
+      shapes.push_back(std::make_unique<Paint::Line>(mouseClick, mouseRelease));
     }
-
-    DrawLineV(mouseClick, mouseRelease, raylib::Color::Black());
 
     for (auto &shape : shapes) {
 
       shape->Draw();
     }
 
+    // InterFace
+
+    raylib::Rectangle guiGroupRect(8, 8, w - 16, 34);
+    guiGroupRect.Draw(raylib::Color::RayWhite());
     GuiGroupBox(guiGroupRect, "CONTROLS");
+    GuiToggleGroup((Rectangle){13, 13, 120, 24},
+                   "Line;Rectangle;Ellipse;Polygon;Line Color;Fill Color",
+                   &Mode);
+    if (Mode == 4) {
+      GuiColorPicker((Rectangle){w - 149, 8, 120, 120}, NULL, &lineColor);
+    }
 
-    lineButtonPressed = GuiButton((Rectangle){13, 13, 120, 24}, "LINHA");
-    rectButtonPressed = GuiButton((Rectangle){137, 13, 120, 24}, "RETANGULO");
-    elliButtonPressed = GuiButton((Rectangle){260, 13, 120, 24}, "ELIPSE");
-
+    if (Mode == 5) {
+      GuiColorPicker((Rectangle){w - 149, 8, 120, 120}, NULL, &fillColor);
+    }
     EndDrawing();
   }
 
   CloseWindow();
   return 0;
 }
-static void lineButton() { buttonPressed = 0; }
-static void rectButton() { buttonPressed = 1; }
-static void elliButton() { buttonPressed = 2; }
-static void polyButton() { buttonPressed = 3; }
