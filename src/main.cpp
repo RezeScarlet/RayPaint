@@ -38,28 +38,57 @@ int main() {
     if (IsMouseButtonDown(0)) {
       mouseRelease.x = GetMouseX();
       mouseRelease.y = GetMouseY();
-      
-      DrawLineV(mouseClick, mouseRelease, lineColor);
+
+      switch (Mode) {
+      case 0: { // não sei se isso vai ser o melhor. desse jeito qnd vc
+                // seleciona
+        // cor e depois vai desenhar ele não desenha o temp pq o mode tá
+        // como 4 PQ ACABOU DE SELECIONAR COLOR PICKER
+        DrawLineV(mouseClick, mouseRelease, lineColor);
+        break;
+      }
+      case 1: {
+        DrawRectangleV(mouseClick, mouseRelease, fillColor);
+        break;
+      }
+      }
     }
 
     if (IsMouseButtonReleased(0)) {
-      Paint::Line tempLine(mouseClick, mouseRelease);
-      shapes.push_back(std::make_unique<Paint::Line>(mouseClick, mouseRelease));
+
+      switch (Mode) {
+      case 0: {
+        Paint::Line tempLine(mouseClick, mouseRelease, lineColor);
+        shapes.push_back(
+            std::make_unique<Paint::Line>(mouseClick, mouseRelease, lineColor));
+        break;
+      }
+      case 1: {
+        Paint::Rectangle tempRect(mouseClick, mouseRelease, lineColor,
+                                  fillColor);
+        shapes.push_back(std::make_unique<Paint::Rectangle>(
+            mouseClick, mouseRelease, lineColor, fillColor));
+        break;
+      }
+      }
     }
 
     for (auto &shape : shapes) {
-
       shape->Draw();
     }
 
     // InterFace
 
     raylib::Rectangle guiGroupRect(8, 8, w - 16, 34);
+
     guiGroupRect.Draw(raylib::Color::RayWhite());
+
     GuiGroupBox(guiGroupRect, "CONTROLS");
-    GuiToggleGroup((Rectangle){13, 13, 120, 24},
-                   "Line;Rectangle;Ellipse;Polygon;Line Color;Fill Color",
-                   &Mode);
+    GuiToggleGroup(
+        (Rectangle){13, 13, 120, 24},
+        "Line;Rectangle;Ellipse;Polygon;Line Color;Fill Color",
+        &Mode); // serve pra qnd vc clicar em cada button, o Mode mudar
+
     if (Mode == 4) {
       GuiColorPicker((Rectangle){w - 149, 8, 120, 120}, NULL, &lineColor);
     }
