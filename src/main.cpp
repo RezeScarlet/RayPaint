@@ -2,13 +2,15 @@
 #include <iostream>
 #include <memory>
 #include <raylib.h>
+#include <sys/types.h>
 #define RAYGUI_IMPLEMENTATION
 #include "../include/raygui.h"
 
 #include "Shapes.hpp"
 
-int Mode = 0; // 0 = line, 1 = rectangle, 2 = ellipse, 3 = polygon, 4 =
-              // lineColor, 5 = fillColor
+int drawMode = 0; // 0 = line, 1 = rectangle, 2 = ellipse, 3 = polygon
+int Mode = 0;     // 0 = line, 1 = rectangle, 2 = ellipse, 3 = polygon, 4 =
+                  // lineColor, 5 = fillColor
 raylib::Color lineColor = raylib::Color::Black();
 raylib::Color fillColor = raylib::Color::Black();
 int main() {
@@ -39,7 +41,7 @@ int main() {
       mouseRelease.x = GetMouseX();
       mouseRelease.y = GetMouseY();
 
-      switch (Mode) {
+      switch (drawMode) {
       case 0: { // não sei se isso vai ser o melhor. desse jeito qnd vc
                 // seleciona
         // cor e depois vai desenhar ele não desenha o temp pq o mode tá
@@ -48,7 +50,7 @@ int main() {
         break;
       }
       case 1: {
-        DrawRectangleV(mouseClick, mouseRelease, fillColor);
+        DrawRectangleV(mouseClick, mouseRelease - mouseClick, fillColor);
         break;
       }
       }
@@ -56,7 +58,7 @@ int main() {
 
     if (IsMouseButtonReleased(0)) {
 
-      switch (Mode) {
+      switch (drawMode) {
       case 0: {
         Paint::Line tempLine(mouseClick, mouseRelease, lineColor);
         shapes.push_back(
@@ -67,7 +69,7 @@ int main() {
         Paint::Rectangle tempRect(mouseClick, mouseRelease, lineColor,
                                   fillColor);
         shapes.push_back(std::make_unique<Paint::Rectangle>(
-            mouseClick, mouseRelease, lineColor, fillColor));
+            mouseClick, mouseRelease - mouseClick, lineColor, fillColor));
         break;
       }
       }
@@ -89,6 +91,9 @@ int main() {
         "Line;Rectangle;Ellipse;Polygon;Line Color;Fill Color",
         &Mode); // serve pra qnd vc clicar em cada button, o Mode mudar
 
+    if (Mode < 4) {
+      drawMode = Mode;
+    }
     if (Mode == 4) {
       GuiColorPicker((Rectangle){w - 149, 8, 120, 120}, NULL, &lineColor);
     }
