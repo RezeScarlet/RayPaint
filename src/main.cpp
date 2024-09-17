@@ -87,16 +87,18 @@ int main() {
       case 2: {
         Paint::Ellipse tempEl(mouseClick, mouseRelease, lineColor, fillColor);
         tempEl.Draw();
+        break;
       }
       case 3: {
         Paint::Polygon tempPoly(mouseClick, mouseRelease, lineColor, fillColor,
                                 polySides);
         tempPoly.Draw();
+        break;
       }
       }
     }
-    // InterFace
 
+    // InterFace
     raylib::Rectangle guiGroupRect(8, 8, w - 16, 34);
 
     guiGroupRect.Draw(raylib::Color::RayWhite());
@@ -104,21 +106,24 @@ int main() {
     GuiGroupBox(guiGroupRect, "CONTROLS");
     GuiToggleGroup(
         (Rectangle){13, 13, 60, 24},
-        "Line;Rectangle;Ellipse;Polygon;Line Color;Fill Color",
+        "Line; Rectangle; Ellipse; Polygon; Line Color; Fill Color",
         &Mode); // serve pra qnd vc clicar em cada button, o Mode mudar
-    if (GuiSpinner((Rectangle){550, 13, 80, 24}, "Polygon Sides", &polySides, 3,
+
+    if (GuiSpinner((Rectangle){460, 13, 80, 24}, "Polygon Sides", &polySides, 3,
                    100, sidesMode))
       sidesMode = !sidesMode;
+
     if (Mode < 4) {
       drawMode = Mode;
     }
+
     if (Mode == 4) {
       GuiColorPicker((Rectangle){w - 149, 8, 120, 120}, NULL, &lineColor);
     }
-
     if (Mode == 5) {
       GuiColorPicker((Rectangle){w - 149, 8, 120, 120}, NULL, &fillColor);
     }
+
     EndDrawing();
   }
 

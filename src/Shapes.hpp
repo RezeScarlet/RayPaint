@@ -1,5 +1,9 @@
 #include "../include/raylib-cpp.hpp"
+#include <cmath>
+#include <cstdlib>
+#include <iostream>
 #include <raylib.h>
+
 namespace Paint {
 
 class Shape {
@@ -54,7 +58,15 @@ public:
 
 inline void Line::Draw() { DrawLineV(start, end, lineColor); }
 inline void Rectangle::Draw() {
-  DrawRectangleV(start, end - start, fillColor);
+  float xStartD = start.x < end.x ? start.x : end.x;
+  float xEndD = start.x < end.x ? end.x : start.x;
+
+  float yStartD = start.y < end.y ? start.y : end.y;
+  float yEndD = start.y < end.y ? end.y : start.y;
+
+  raylib::Vector2 size = {xEndD - xStartD, yEndD - yStartD};
+
+  DrawRectangleV({xStartD, yStartD}, size, fillColor);
   DrawRectangleLines(start.x, start.y, end.x - start.x, end.y - start.y,
                      lineColor);
 }
@@ -69,13 +81,12 @@ inline void Ellipse::Draw() {
   DrawEllipseLines(center.x, center.y, radiusX, radiusY, lineColor);
 }
 inline void Polygon::Draw() {
-  raylib::Vector2 center = (start + end) / 2.0f;
 
-  float radius = fabs(end.x - start.x) / 2.0f; 
+  float radius = fabs(end.x - start.x);
 
   float rotation = atan2(end.y - start.y, end.x - start.x) * (180.0f / PI);
 
-  DrawPoly(center, sides, radius, rotation, fillColor);
-  DrawPolyLines(center, sides, radius, rotation, lineColor);
+  DrawPoly(start, sides, radius, rotation, fillColor);
+  DrawPolyLines(start, sides, radius, rotation, lineColor);
 }
 } // namespace Paint
