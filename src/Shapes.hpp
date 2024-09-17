@@ -67,7 +67,7 @@ inline void Rectangle::Draw() {
   raylib::Vector2 size = {xEndD - xStartD, yEndD - yStartD};
 
   DrawRectangleV({xStartD, yStartD}, size, fillColor);
-  DrawRectangleLines(start.x, start.y, end.x - start.x, end.y - start.y,
+  DrawRectangleLines(xStartD, yStartD, xEndD - xStartD, yEndD - yStartD,
                      lineColor);
 }
 inline void Ellipse::Draw() {
